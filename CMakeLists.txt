@@ -13,7 +13,9 @@ ExternalProject_Add(lua-clone
 
 ExternalProject_Get_property(lua-clone SOURCE_DIR)
 
-# all sources, except lua.c
+# all sources, except lua.c (which contains a stand-alone
+# interpeter and a main(), which is useless when embedding
+# Lua, like we do here)
 list(APPEND LUA_SOURCES
   ${SOURCE_DIR}/lapi.c
   ${SOURCE_DIR}/lauxlib.c
