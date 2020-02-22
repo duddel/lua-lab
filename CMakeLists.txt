@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
+
 project(lua-lab)
+
+enable_testing()
 include(ExternalProject)
 
 ExternalProject_Add(lua-clone
@@ -64,4 +67,10 @@ add_dependencies(${CMAKE_PROJECT_NAME} lua-clone)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
   ${SOURCE_DIR}
+)
+
+# add the executable as a test to be run by ctest
+add_test(
+  NAME ${CMAKE_PROJECT_NAME}_run
+  COMMAND ${CMAKE_PROJECT_NAME}
 )
