@@ -23,8 +23,8 @@ jobs:
         cd _build
         cmake --build .
     - name: test
-      # -C Debug: chose "Debug" if multiple build configs available,
-      # like in Visual Studio Solutions, -V: verbose output
       run: |
-      cd _build
-      ctest -C Debug -V
+        cd _build
+        # -C Debug: chose "Debug" if multiple build configs available,
+        # like in Visual Studio Solutions, -V: verbose output
+        ctest -C Debug -V
