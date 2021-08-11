@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
+find_package(Git)
 
 project(lua-lab)
 
@@ -58,6 +59,19 @@ list(APPEND LUA_SOURCES
 
 set_property(SOURCE ${LUA_SOURCES} PROPERTY GENERATED TRUE)
 
+# get a specific commit of LuaJIT
+set(LUA_JIT_COMMIT_SHA abf43867b48c55e87d932817bf8155939b44b7c2)
+
+# clone LuaJIT
+execute_process(COMMAND "${GIT_EXECUTABLE}" clone https://github.com/WohlSoft/LuaJIT.git
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+# reset LuaJIT clone to the requested commit
+execute_process(COMMAND "${GIT_EXECUTABLE}" reset "${LUA_JIT_COMMIT_SHA}" --hard
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT"
+)
+
+# 1st executable: original Lua
 add_executable(${CMAKE_PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
   ${LUA_SOURCES}
@@ -69,8 +83,28 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
   ${SOURCE_DIR}
 )
 
-# add the executable as a test to be run by ctest
+# 2nd executable: LuaJIT
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT)
+
+add_executable(${CMAKE_PROJECT_NAME}_jit
+  ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+)
+
+target_include_directories(${CMAKE_PROJECT_NAME}_jit PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT/src
+)
+
+target_link_libraries(${CMAKE_PROJECT_NAME}_jit PUBLIC
+  libluajit
+)
+
+# add the executables as a tests to be run by ctest
 add_test(
   NAME ${CMAKE_PROJECT_NAME}_run
   COMMAND ${CMAKE_PROJECT_NAME}
+)
+
+add_test(
+  NAME ${CMAKE_PROJECT_NAME}_jit_run
+  COMMAND ${CMAKE_PROJECT_NAME}_jit
 )
