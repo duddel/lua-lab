@@ -3,11 +3,14 @@
 In this experiment, we
 
 -   compile `Lua` (v5.3.5) into a C++ executable and call a `Lua` function from native code,
--   do the same thing with `LuaJIT` (2.1.0-beta3).
+-   do the same thing with `LuaJIT` (2.1.0-beta3),
+-   and use `Lua` (v5.3.5) together with `LuaBridge` to do more advanced Lua/C++ interaction.
 
 The `Lua` source code is not provided in this repository, but cloned during the build step. This is done by CMake with `ExternalProject`, see: [CMakeLists.txt](CMakeLists.txt).
 
 The `LuaJIT` source code is not provided in this repository, but cloned during the configure step. This is done by CMake via Git, see: [CMakeLists.txt](CMakeLists.txt).
+
+The `LuaBridge` source code is not provided in this repository, but cloned during the configure step. This is done by CMake via Git, see: [CMakeLists.txt](CMakeLists.txt).
 
 Configure, build and test via CMake (v3.6+), like so:
 
@@ -19,7 +22,7 @@ cmake --build .
 ctest -V
 ```
 
-This builds the executables `lua-lab` and `lua-lab_jit`. The Output of both, if everythings works:
+This builds the executables `lua-lab`, `lua-lab_jit` and `lua-lab_bridge`. The Output of the first two, if everythings works:
 
     0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
     0.0 0.0 0.0 0.7 1.1 1.2 1.1 0.7 0.0 0.0 0.0
@@ -111,3 +114,29 @@ This builds the executables `lua-lab` and `lua-lab_jit`. The Output of both, if 
     This is a version (aka dlmalloc) of malloc/free/realloc written by
     Doug Lea and released to the public domain, as explained at
     https://creativecommons.org/licenses/publicdomain
+
+## LuaBridge License
+
+    Copyright (C) 2019, Dmitry Tarakanov
+    Copyright (C) 2012, Vinnie Falco
+    Copyright (C) 2008, Nigel Atkinson
+    Copyright (C) 2007, Nathan Reed
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

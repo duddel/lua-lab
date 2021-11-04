@@ -59,6 +59,7 @@ list(APPEND LUA_SOURCES
 
 set_property(SOURCE ${LUA_SOURCES} PROPERTY GENERATED TRUE)
 
+
 # get a specific commit of LuaJIT
 set(LUA_JIT_COMMIT_SHA abf43867b48c55e87d932817bf8155939b44b7c2)
 
@@ -67,9 +68,24 @@ execute_process(COMMAND "${GIT_EXECUTABLE}" clone https://github.com/WohlSoft/Lu
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 # reset LuaJIT clone to the requested commit
-execute_process(COMMAND "${GIT_EXECUTABLE}" reset "${LUA_JIT_COMMIT_SHA}" --hard
+execute_process(COMMAND "${GIT_EXECUTABLE}" checkout "${LUA_JIT_COMMIT_SHA}"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT"
 )
+
+
+# get a specific commit of LuaBridge
+set(LUA_BRIDGE_COMMIT_SHA fab7b33b896a42dcc865ba5ecdbacd9f409137f8)
+
+# clone LuaBridge
+execute_process(COMMAND "${GIT_EXECUTABLE}" clone https://github.com/vinniefalco/LuaBridge.git
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+# reset LuaBridge clone to the requested commit
+execute_process(COMMAND "${GIT_EXECUTABLE}" checkout "${LUA_BRIDGE_COMMIT_SHA}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/LuaBridge"
+)
+
+
 
 # 1st executable: original Lua
 add_executable(${CMAKE_PROJECT_NAME}
@@ -82,6 +98,7 @@ add_dependencies(${CMAKE_PROJECT_NAME} lua-clone)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
   ${SOURCE_DIR}
 )
+
 
 # 2nd executable: LuaJIT
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT)
@@ -98,6 +115,21 @@ target_link_libraries(${CMAKE_PROJECT_NAME}_jit PUBLIC
   libluajit
 )
 
+
+# 3rd executable: original Lua + LuaBridge
+add_executable(${CMAKE_PROJECT_NAME}_bridge
+  ${CMAKE_CURRENT_SOURCE_DIR}/main_bridge.cpp
+  ${LUA_SOURCES}
+)
+
+add_dependencies(${CMAKE_PROJECT_NAME}_bridge lua-clone)
+
+target_include_directories(${CMAKE_PROJECT_NAME}_bridge PRIVATE
+  ${SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/LuaBridge/Source
+)
+
+
 # add the executables as a tests to be run by ctest
 add_test(
   NAME ${CMAKE_PROJECT_NAME}_run
@@ -107,4 +139,9 @@ add_test(
 add_test(
   NAME ${CMAKE_PROJECT_NAME}_jit_run
   COMMAND ${CMAKE_PROJECT_NAME}_jit
+)
+
+add_test(
+  NAME ${CMAKE_PROJECT_NAME}_bridge_run
+  COMMAND ${CMAKE_PROJECT_NAME}_bridge
 )
