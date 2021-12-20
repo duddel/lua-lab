@@ -47,6 +47,10 @@ public:
     {
         std::printf("my name is %s\n", _name.c_str());
     }
+    ~A()
+    {
+        std::printf("~A() called (%s)\n", _name.c_str());
+    }
 };
 
 std::vector<float> g_vec = {7.0f, 14.0f, 21.0f, 28.0f};
@@ -81,8 +85,19 @@ int main()
         print(tostring(result))
 
         print("Lua -> construct C++ object, call method:")
-        a = lab.A("Luke")
-        a:hello()
+        do
+          local a = lab.A("Luke")
+          a:hello()
+          a1 = lab.A("Pete")
+          a1:hello()
+        end
+
+        -- local a is now out of scope, instance of A can be garbage collected.
+        -- a1 (global) is not out of scope yet and will be garbage collected
+        -- after script execution (during lua_close()).
+        print("running garbage collector...")
+        collectgarbage("collect")
+        print("GC done.")
 
         print("Lua -> read global std::vector from C++:")
         for k,v in pairs(lab.vec) do
@@ -125,7 +140,9 @@ int main()
     luaL_dostring(L, luaCode.c_str());
 
     // close the Lua state
+    std::printf("calling lua_close()...\n");
     lua_close(L);
+    std::printf("lua_close() done.\n");
 
     return 0;
 }
